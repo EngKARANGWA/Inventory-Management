@@ -1,4 +1,5 @@
-"use client"
+'use client';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -32,9 +33,9 @@ const Header = () => {
   return (
     <div className="h-full flex flex-col">
       {/* Logo and Admin */}
-      <div className="bg-green-400 p-4">
-        <div className="text-green-700 text-xl font-semibold">
-          <span>Logo</span>
+      <div className="bg-[#7CCD65] p-4">
+        <div className="text-black text-xl font-semibold flex items-center">
+          <span className="text-[#7CCD65] text-2xl mr-1">C</span> Logo
         </div>
       </div>
       <div className="p-4 bg-gray-50 border-b">
@@ -48,7 +49,7 @@ const Header = () => {
             key={item.path} 
             href={item.path}
             className={`flex items-center px-4 py-3 text-gray-600 hover:bg-green-100 ${
-              currentPath === item.path ? 'bg-green-500 text-white' : ''
+              currentPath === item.path ? 'bg-[#7CCD65] text-white' : ''
             }`}
           >
             {item.icon}
@@ -56,8 +57,7 @@ const Header = () => {
           </Link>
         ))}
       </nav>
-      
-      {/* Logout */}
+    
       <div className="p-4 bg-gray-50 border-t">
         <Link 
           href="/logout"

@@ -2,7 +2,7 @@ import { Search, Bell, User } from 'lucide-react';
 
 const TopBar = () => {
   return (
-    <div className="h-16 bg-green-500 flex items-center justify-between px-4">
+    <div className="h-16 bg-[#7CCD65] flex items-center justify-between px-4">
       <div className="w-1/2">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
