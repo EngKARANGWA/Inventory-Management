@@ -1,12 +1,20 @@
-// pages/index.tsx
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { Twitter, Phone } from "lucide-react";
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleLogin = () => {
+    //login logic 
+    router.push('/dashboard');
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-white text-black">
       {/* Header Section */}
@@ -87,7 +95,8 @@ export default function Home() {
                     />
                   </div>
                   
-                  <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
+                  <Button className="w-full bg-green-500 hover:bg-green-600 text-white"
+                  onClick={handleLogin}>
                     Let me in
                   </Button>
                 </div>

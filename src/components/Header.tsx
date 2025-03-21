@@ -1,5 +1,6 @@
+"use client"
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import { 
   Home, 
   Package, 
@@ -14,8 +15,7 @@ import {
 } from 'lucide-react';
 
 const Header = () => {
-  const router = useRouter();
-  const currentPath = router.pathname;
+  const currentPath = usePathname();
 
   const navItems = [
     { title: 'Dashboard', path: '/dashboard', icon: <Home className="w-5 h-5 mr-2" /> },
