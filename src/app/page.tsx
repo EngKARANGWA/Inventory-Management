@@ -36,7 +36,7 @@ export default function Home() {
             <h2 className="text-xl font-bold mb-4">Welcome !</h2>
             
             <p className="mb-6">
-              Inventory Management system<br />
+              Factory Management system<br />
               is used to track inventory operations<br />
               of products from production process<br />
               until to the final step
