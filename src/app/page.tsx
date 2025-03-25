@@ -6,13 +6,53 @@ import Link from "next/link";
 import Image from "next/image";
 import { Twitter, Phone } from "lucide-react";
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from "sonner";
+
+interface User {
+  email: string;
+  password: string;
+  role: 'admin' | 'cashier' | 'user';
+}
+
+const users: User[] = [
+  { email: 'admin@example.com', password: 'admin123', role: 'admin' },
+  { email: 'cashier@example.com', password: 'cashier123', role: 'cashier' },
+  { email: 'user@example.com', password: 'user123', role: 'user' },
+];
 
 export default function Home() {
   const router = useRouter();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
 
-  const handleLogin = () => {
-    //login logic 
-    router.push('/dashboard');
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const user = {
+      email: formData.email,
+      role: formData.email.includes('cashier') ? 'cashier' : 'admin'
+    };
+
+    // Set cookie for authentication
+    document.cookie = `user=${JSON.stringify(user)}; path=/`;
+    
+    // Redirect based on role
+    if (user.role === 'cashier') {
+      window.location.href = 'dashboard-cachier';
+    } else {
+      window.location.href = '/dashboard';
+    }
   };
 
   return (
@@ -74,32 +114,40 @@ export default function Home() {
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-center mb-4">System Login</h3>
                 
-                <div className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-4">
                   <div>
-                    <label htmlFor="email" className="text-sm text-gray-700">enter email</label>
+                    <label htmlFor="email" className="text-sm text-gray-700">Enter email</label>
                     <Input 
                       id="email"
                       type="email" 
                       placeholder="email@example.com" 
                       className="mt-1 border-gray-300"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
                     />
                   </div>
                   
                   <div>
-                    <label htmlFor="password" className="text-sm text-gray-700">enter password</label>
+                    <label htmlFor="password" className="text-sm text-gray-700">Enter password</label>
                     <Input 
                       id="password"
                       type="password" 
                       placeholder="••••••••••••••••••••••" 
                       className="mt-1 border-gray-300"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      required
                     />
                   </div>
                   
-                  <Button className="w-full bg-green-500 hover:bg-green-600 text-white"
-                  onClick={handleLogin}>
+                  <Button 
+                    type="submit"
+                    className="w-full bg-green-500 hover:bg-green-600 text-white"
+                  >
                     Let me in
                   </Button>
-                </div>
+                </form>
               </CardContent>
             </Card>
             

@@ -281,65 +281,114 @@ export default function ProductPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Factory Products</h1>
-        <button 
-          className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
-          onClick={() => setIsModalOpen(true)}
-        >
-          Add New Product
-        </button>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      {/* Enhanced Header Section */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Products Management</h1>
+        <p className="text-gray-600">Manage and track all factory products</p>
       </div>
 
-      {/* Filters Section */}
-      <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <input
-            type="text"
-            placeholder="Search products..."
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          
-          <select
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="all">All Status</option>
-            <option value="In Production">In Production</option>
-            <option value="Completed">Completed</option>
-            <option value="On Hold">On Hold</option>
-          </select>
-
-          <select
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
-          >
-            <option value="all">All Dates</option>
-            <option value="day">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="custom">Custom</option>
-          </select>
-
-          {dateFilter === 'custom' && (
-            <input
-              type="date"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={customDate}
-              onChange={(e) => setCustomDate(e.target.value)}
-            />
-          )}
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+          <div className="text-sm text-gray-500 mb-1">Total Products</div>
+          <div className="text-2xl font-bold text-gray-800">{products.length}</div>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+          <div className="text-sm text-gray-500 mb-1">In Production</div>
+          <div className="text-2xl font-bold text-yellow-600">
+            {products.filter(p => p.status === 'In Production').length}
+          </div>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+          <div className="text-sm text-gray-500 mb-1">Completed</div>
+          <div className="text-2xl font-bold text-green-600">
+            {products.filter(p => p.status === 'Completed').length}
+          </div>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+          <div className="text-sm text-gray-500 mb-1">On Hold</div>
+          <div className="text-2xl font-bold text-red-600">
+            {products.filter(p => p.status === 'On Hold').length}
+          </div>
         </div>
       </div>
 
-      {/* Table Section */}
-      <div className="bg-white w-280 rounded-lg shadow-sm overflow-hidden">
+      {/* Enhanced Filters Section */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+        <div className="p-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-800">Filters & Search</h2>
+        </div>
+        <div className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search products..."
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <svg
+                className="absolute left-3 top-3 w-5 h-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            
+            <select
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">All Status</option>
+              <option value="In Production">In Production</option>
+              <option value="Completed">Completed</option>
+              <option value="On Hold">On Hold</option>
+            </select>
+
+            <select
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
+            >
+              <option value="all">All Dates</option>
+              <option value="day">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="custom">Custom</option>
+            </select>
+
+            {dateFilter === 'custom' && (
+              <input
+                type="date"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                value={customDate}
+                onChange={(e) => setCustomDate(e.target.value)}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Table Section */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-800">Product List</h2>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Product
+          </button>
+        </div>
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -383,6 +432,17 @@ export default function ProductPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Empty State */}
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-12">
+            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No products found</h3>
+            <p className="mt-1 text-sm text-gray-500">Get started by creating a new product.</p>
+          </div>
+        )}
       </div>
 
       {/* Modal */}
