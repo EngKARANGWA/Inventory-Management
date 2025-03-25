@@ -213,75 +213,157 @@ const MetricsModal = ({
 
 // Main Dashboard Component
 const Dashboard = () => {
-  // Sample data for the components
+  // Sample data with more meaningful metrics
   const summaryData = [
-    { title: 'Purchases', value: '10%', icon: ShoppingCart },
-    { title: 'Stock', value: '70%', icon: Package },
-    { title: 'Sales', value: '90%', icon: Tag },
-    { title: 'Revenue', value: '1000$', icon: Wallet },
+    { 
+      title: 'Total Sales', 
+      value: 'frw 125,000', 
+      icon: ShoppingCart,
+      trend: 'up',
+      change: 12,
+      alertCount: 3
+    },
+    { 
+      title: 'Stock Value', 
+      value: 'frw 450,000', 
+      icon: Package,
+      trend: 'down',
+      change: 5,
+      alertCount: 2
+    },
+    { 
+      title: 'Active Orders', 
+      value: '38', 
+      icon: Tag,
+      trend: 'up',
+      change: 8,
+      alertCount: 0
+    },
+    { 
+      title: 'Revenue', 
+      value: 'frw 89,000', 
+      icon: Wallet,
+      trend: 'up',
+      change: 15,
+      alertCount: 0
+    }
   ];
 
   const donutData = [
-    { label: 'Acquisition', value: 40, color: '#1E88E5' }, // Dark blue
-    { label: 'Purchase', value: 35, color: '#64B5F6' },   // Light blue
-    { label: 'Retention', value: 25, color: '#FFB74D' },  // Orange
-  ];
-
-  const metricsData = [
-    { label: 'Abandoned Cart', value: '45', icon: ShoppingCart },
-    { label: 'Customers', value: '32', growth: '+24%', icon: Users },
+    { label: 'Raw Materials', value: 40, color: '#2563EB' },
+    { label: 'In Production', value: 35, color: '#10B981' },
+    { label: 'Finished Goods', value: 25, color: '#F59E0B' }
   ];
 
   const histogramData = [
-    { month: 'Jan', values: [60, 80] },
-    { month: 'Feb', values: [50, 70] },
-    { month: 'Mar', values: [70, 60] },
-    { month: 'Apr', values: [80, 90] },
-    { month: 'May', values: [60, 70] },
-    { month: 'Jun', values: [50, 60] },
+    { month: 'Jan', values: [65, 85] },
+    { month: 'Feb', values: [55, 75] },
+    { month: 'Mar', values: [75, 65] },
+    { month: 'Apr', values: [85, 95] },
+    { month: 'May', values: [65, 75] },
+    { month: 'Jun', values: [55, 65] }
   ];
 
   return (
-    <div className="p-4 bg-gray-100 min-h-screen">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div className="p-6 bg-gray-50 min-h-screen">
+      {/* Enhanced Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Dashboard Overview</h1>
+        <p className="text-gray-600">Welcome back! Here's what's happening in Maize Factory</p>
+      </div>
+
+      {/* Summary Cards with Improved Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {summaryData.map((item, index) => (
-          <SummaryCard key={index} title={item.title} value={item.value} icon={item.icon} />
+          <SummaryCard 
+            key={index}
+            {...item}
+            onClick={() => {/* Handle card click */}}
+          />
         ))}
       </div>
 
-      {/* Middle Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        {/* Donut Chart */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">MARKETING</h2>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        {/* Stock Distribution Chart */}
+        <div className="lg:col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-800">Stock Distribution</h2>
+            <select className="text-sm border border-gray-300 rounded-lg px-3 py-2">
+              <option>Last 7 Days</option>
+              <option>Last 30 Days</option>
+              <option>Last Quarter</option>
+            </select>
+          </div>
           <DonutChart data={donutData} />
         </div>
 
-        {/* Metrics Box */}
-        <div className="bg-green-50 p-6 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-800">METRICS</h2>
-            <select className="bg-white p-2 rounded-md text-gray-600 border border-gray-300">
-              <option>This Week</option>
-              <option>Last Week</option>
-            </select>
-          </div>
-          {metricsData.map((item, index) => (
-            <div key={index} className="flex items-center mb-4">
-              <item.icon className="w-6 h-6 mr-3 text-gray-600" />
-              <span className="text-3xl font-bold text-gray-800">{item.value}</span>
-              {item.growth && <span className="text-green-500 ml-2">{item.growth}</span>}
-              <span className="ml-2 text-gray-600">{item.label}</span>
+        {/* Monthly Performance Chart */}
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-800">Sales vs Orders</h2>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                <span className="text-sm text-gray-600">Sales</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-amber-500 rounded-full mr-2"></div>
+                <span className="text-sm text-gray-600">Orders</span>
+              </div>
             </div>
-          ))}
+          </div>
+          <HistogramChart 
+            data={histogramData} 
+            colors={['#2563EB', '#F59E0B']} 
+          />
         </div>
       </div>
 
-      {/* Bottom Section: Histogram */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">MONTHLY REPORT</h2>
-        <HistogramChart data={histogramData} colors={['#1E88E5', '#FFB74D']} />
+      {/* Bottom Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Recent Activity */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">Recent Activity</h2>
+          <div className="space-y-4">
+            {/* Activity items */}
+            {[1, 2, 3].map((_, i) => (
+              <div key={i} className="flex items-center p-4 bg-gray-50 rounded-lg">
+                <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                  <ShoppingCart className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">New order received</p>
+                  <p className="text-sm text-gray-500">Order #1234 - frw 1,230</p>
+                </div>
+                <span className="ml-auto text-sm text-gray-500">2 min ago</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { title: 'New Sale', icon: ShoppingCart, color: 'bg-blue-500' },
+              { title: 'Add Product', icon: Package, color: 'bg-green-500' },
+              { title: 'Generate Report', icon: Tag, color: 'bg-amber-500' },
+              { title: 'View Inventory', icon: Wallet, color: 'bg-purple-500' }
+            ].map((action, i) => (
+              <button
+                key={i}
+                className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <div className={`w-10 h-10 ${action.color} rounded-lg flex items-center justify-center mr-3`}>
+                  <action.icon className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-sm font-medium text-gray-700">{action.title}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

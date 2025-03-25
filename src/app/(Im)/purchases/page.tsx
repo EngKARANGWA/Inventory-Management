@@ -8,8 +8,12 @@ interface Purchase {
   supplierName: string;
   items: string;
   quantity: number;
+  quantityDelivered: number;
+  quantityRemaining: number;
   pricePerUnit: number;
-  totalCost: number;
+  totalAmount: number;
+  amountPaid: number;
+  amountRemaining: number;
   status: 'Pending' | 'Received' | 'Cancelled';
   orderDate: string;
   deliveryDate: string | null;
@@ -32,14 +36,18 @@ const AddPurchaseModal = ({
     supplierName: '',
     items: '',
     quantity: 0,
+    quantityDelivered: 0,
+    quantityRemaining: 0,
     pricePerUnit: 0,
-    totalCost: 0,
+    totalAmount: 0,
+    amountPaid: 0,
+    amountRemaining: 0,
     status: 'Pending' as Purchase['status'],
     orderDate: new Date().toISOString().split('T')[0],
     deliveryDate:''
   });
 
-  const calculateTotalCost = (quantity: number, pricePerUnit: number) => {
+  const calculateTotalAmount = (quantity: number, pricePerUnit: number) => {
     return quantity * pricePerUnit;
   };
 
@@ -119,7 +127,7 @@ const AddPurchaseModal = ({
                   setNewPurchase({
                     ...newPurchase,
                     quantity,
-                    totalCost: calculateTotalCost(quantity, newPurchase.pricePerUnit)
+                    totalAmount: calculateTotalAmount(quantity, newPurchase.pricePerUnit)
                   });
                 }}
                 required
@@ -140,7 +148,7 @@ const AddPurchaseModal = ({
                     setNewPurchase({
                       ...newPurchase,
                       pricePerUnit,
-                      totalCost: calculateTotalCost(newPurchase.quantity, pricePerUnit)
+                      totalAmount: calculateTotalAmount(newPurchase.quantity, pricePerUnit)
                     });
                   }}
                   required
@@ -151,13 +159,13 @@ const AddPurchaseModal = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Total Cost</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Total Amount</label>
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-gray-500">frw</span>
                 <input
                   type="number"
                   className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg bg-gray-100"
-                  value={newPurchase.totalCost}
+                  value={newPurchase.totalAmount}
                   readOnly
                 />
               </div>
@@ -237,7 +245,7 @@ const EditPurchaseModal = ({
     setEditedPurchase(purchase);
   }, [purchase]);
 
-  const calculateTotalCost = (quantity: number, pricePerUnit: number) => {
+  const calculateTotalAmount = (quantity: number, pricePerUnit: number) => {
     return quantity * pricePerUnit;
   };
 
@@ -316,7 +324,7 @@ const EditPurchaseModal = ({
                   setEditedPurchase({
                     ...editedPurchase,
                     quantity,
-                    totalCost: calculateTotalCost(quantity, editedPurchase.pricePerUnit)
+                    totalAmount: calculateTotalAmount(quantity, editedPurchase.pricePerUnit)
                   });
                 }}
                 required
@@ -337,7 +345,7 @@ const EditPurchaseModal = ({
                     setEditedPurchase({
                       ...editedPurchase,
                       pricePerUnit,
-                      totalCost: calculateTotalCost(editedPurchase.quantity, pricePerUnit)
+                      totalAmount: calculateTotalAmount(editedPurchase.quantity, pricePerUnit)
                     });
                   }}
                   required
@@ -348,13 +356,13 @@ const EditPurchaseModal = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Total Cost</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Total Amount</label>
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-gray-500">frw</span>
                 <input
                   type="number"
                   className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg bg-gray-100"
-                  value={editedPurchase.totalCost}
+                  value={editedPurchase.totalAmount}
                   readOnly
                 />
               </div>
@@ -424,9 +432,13 @@ export default function PurchasePage() {
       supplierName: 'Supplier Corp',
       items: 'Raw Material A',
       quantity: 1000,
+      quantityDelivered: 600,
+      quantityRemaining: 400,
       pricePerUnit: 5.00,
-      totalCost: 5000.00,
-      status: 'Received',
+      totalAmount: 5000.00,
+      amountPaid: 3000.00,
+      amountRemaining: 2000.00,
+      status: 'Pending',
       orderDate: '2025-03-20',
       deliveryDate: '2025-03-22'
     },
@@ -436,8 +448,12 @@ export default function PurchasePage() {
       supplierName: 'Global Materials Ltd',
       items: 'Raw Material B',
       quantity: 500,
+      quantityDelivered: 0,
+      quantityRemaining: 500,
       pricePerUnit: 5.00,
-      totalCost: 2500.00,
+      totalAmount: 2500.00,
+      amountPaid: 0.00,
+      amountRemaining: 2500.00,
       status: 'Pending',
       orderDate: '2025-03-22',
       deliveryDate: null
@@ -530,17 +546,38 @@ export default function PurchasePage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      {/* Header Section */}
-      <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">Purchase Orders</h1>
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
-          >
-            New Purchase Order
-          </button>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      {/* Enhanced Header Section */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Purchase Orders</h1>
+        <p className="text-gray-600">Manage and track all purchase transactions</p>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+          <div className="text-sm text-gray-500 mb-1">Total Orders Value</div>
+          <div className="text-2xl font-bold text-gray-800">
+            frw {purchases.reduce((acc, p) => acc + p.totalAmount, 0).toFixed(2)}
+          </div>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+          <div className="text-sm text-gray-500 mb-1">Amount Paid</div>
+          <div className="text-2xl font-bold text-green-600">
+            frw {purchases.reduce((acc, p) => acc + p.amountPaid, 0).toFixed(2)}
+          </div>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+          <div className="text-sm text-gray-500 mb-1">Amount Due</div>
+          <div className="text-2xl font-bold text-red-600">
+            frw {purchases.reduce((acc, p) => acc + p.amountRemaining, 0).toFixed(2)}
+          </div>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+          <div className="text-sm text-gray-500 mb-1">Pending Orders</div>
+          <div className="text-2xl font-bold text-yellow-600">
+            {purchases.filter(p => p.status === 'Pending').length}
+          </div>
         </div>
       </div>
 
@@ -589,8 +626,8 @@ export default function PurchasePage() {
         </div>
       </div>
 
-      {/* Table Section */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      {/* Enhanced Table Section */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -598,50 +635,70 @@ export default function PurchasePage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PO #</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Quantity
+                  <span className="block text-gray-400 font-normal">(Total/Delivered/Remaining)</span>
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price/Unit</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Cost</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Amount
+                  <span className="block text-gray-400 font-normal">(Total/Paid/Remaining)</span>
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivery Date</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200">
               {filteredPurchases.map((purchase) => (
                 <tr key={purchase.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">{purchase.purchaseNumber}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{purchase.supplierName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{purchase.items}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{purchase.quantity}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">${purchase.pricePerUnit.toFixed(2)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">${purchase.totalCost.toFixed(2)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                    #{purchase.purchaseNumber}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                    {purchase.supplierName}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                    {purchase.items}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(purchase.status)}`}>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-900">{purchase.quantity}</span>
+                      <span className="text-gray-400">/</span>
+                      <span className="text-green-600">{purchase.quantityDelivered}</span>
+                      <span className="text-gray-400">/</span>
+                      <span className="text-blue-600">{purchase.quantityRemaining}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                    frw {purchase.pricePerUnit.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex flex-col space-y-1">
+                      <div className="text-gray-900">frw {purchase.totalAmount.toFixed(2)}</div>
+                      <div className="text-green-600">frw {purchase.amountPaid.toFixed(2)}</div>
+                      <div className="text-red-600">frw {purchase.amountRemaining.toFixed(2)}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-3 py-1 text-xs rounded-full ${getStatusColor(purchase.status)}`}>
                       {purchase.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{purchase.orderDate}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{purchase.deliveryDate || 'Pending'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                    <button 
-                      onClick={() => handleEditClick(purchase)}
-                      className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition-colors flex items-center gap-1 inline-flex"
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                      Edit
-                    </button>
-                    <button 
-                      onClick={() => handleDeleteClick(purchase.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors flex items-center gap-1 inline-flex"
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                      Delete
-                    </button>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div className="flex space-x-2">
+                      <button 
+                        onClick={() => handleEditClick(purchase)}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteClick(purchase.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

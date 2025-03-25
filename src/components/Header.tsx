@@ -42,13 +42,13 @@ const navigationConfig = {
     { title: 'Settings', path: '/settings', icon: <Settings className="w-5 h-5 mr-2" /> },
   ],
   [userRoles.CASHIER]: [
-    { title: 'Dashboard', path: '/dashboard-cachier', icon: <Home className="w-5 h-5 mr-2" /> },
+    { title: 'Dashboard', path: '/dashboard', icon: <Home className="w-5 h-5 mr-2" /> },
     { title: 'Sales', path: '/sales', icon: <Tag className="w-5 h-5 mr-2" /> },
     { title: 'Payments', path: '/paymentactions', icon: <CreditCard className="w-5 h-5 mr-2" /> },
   ],
   [userRoles.PRODUCTION]: [
     { title: 'Dashboard', path: '/dashboard', icon: <Home className="w-5 h-5 mr-2" /> },
-    { title: 'Production', path: '/tasks', icon: <Factory className="w-5 h-5 mr-2" /> },
+    { title: 'Production', path: '/production', icon: <Factory className="w-5 h-5 mr-2" /> },
     { title: 'Inventory', path: '/inventory', icon: <Warehouse className="w-5 h-5 mr-2" /> },
   ],
   [userRoles.SUPPLIER]: [
@@ -69,7 +69,7 @@ const Header = () => {
     setNavItems(navigationConfig[selectedRole]);
     // Redirect to the appropriate dashboard when role changes
     // router.push(`/${selectedRole === 'admin' ? 'dashboard' : selectedRole + '/dashboard'}`);
-    if (selectedRole == 'cashier') router.push('/dashboard-cachier');
+    if (selectedRole == 'cashier') router.push('/dashboard');
     if (selectedRole == 'admin') router.push('/dashboard');
     // router.push(`/${selectedRole === 'admin' ? 'dashboard' : selectedRole + '/dashboard'}`);
   }, [selectedRole, router]);
