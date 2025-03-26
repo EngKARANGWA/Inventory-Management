@@ -54,7 +54,7 @@ const AddInventoryModal = ({ isOpen, onClose, onAdd }: AddInventoryModalProps) =
         {/* Enhanced Header */}
         <div className="bg-green-500  px-3 py-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl px-40 font-bold text-white">Add New Item</h2>
+            <h2 className="text-2xl px-40 font-bold text-white">Add New Inventory</h2>
           </div>
         </div>
 
@@ -86,7 +86,7 @@ const AddInventoryModal = ({ isOpen, onClose, onAdd }: AddInventoryModalProps) =
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Select Stock</label>
               <div className="relative">
                 <select
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg appearance-none bg-gray-50 hover:bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
@@ -144,7 +144,7 @@ const AddInventoryModal = ({ isOpen, onClose, onAdd }: AddInventoryModalProps) =
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
-              Add Item
+              Save
             </button>
           </div>
         </form>
@@ -179,7 +179,7 @@ const EditInventoryModal = ({
       <div className="bg-white rounded-2xl w-[550px] max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="bg-green-500 px-3 py-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl px-40 font-bold text-white">Edit Item</h2>
+            <h2 className="text-2xl px-40 font-bold text-white">Edit Inventory</h2>
           </div>
         </div>
 

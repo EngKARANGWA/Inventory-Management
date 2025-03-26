@@ -48,11 +48,11 @@ const navigationConfig = {
   ],
   [userRoles.PRODUCTION]: [
     { title: 'Dashboard', path: '/dashboard', icon: <Home className="w-5 h-5 mr-2" /> },
-    { title: 'Production', path: '/production', icon: <Factory className="w-5 h-5 mr-2" /> },
+    { title: 'Production', path: '/task', icon: <Factory className="w-5 h-5 mr-2" /> },
     { title: 'Inventory', path: '/inventory', icon: <Warehouse className="w-5 h-5 mr-2" /> },
   ],
   [userRoles.SUPPLIER]: [
-    { title: 'Dashboard', path: '/supplier/dashboard', icon: <Home className="w-5 h-5 mr-2" /> },
+    { title: 'Dashboard', path: '/dashboard', icon: <Home className="w-5 h-5 mr-2" /> },
     { title: 'Orders', path: '/supplier/orders', icon: <ShoppingCart className="w-5 h-5 mr-2" /> },
     { title: 'Deliveries', path: '/supplier/deliveries', icon: <Truck className="w-5 h-5 mr-2" /> },
   ],
