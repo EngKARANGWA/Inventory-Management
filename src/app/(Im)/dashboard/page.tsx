@@ -174,7 +174,7 @@ const HistogramChart = ({ data, colors }) => {
 };
 
 const MetricsModal = ({ 
-  isOpen, 
+  isOpen,
   onClose, 
   title, 
   data 

@@ -2,6 +2,13 @@
 
 import { useState } from 'react';
 
+// Add this near the top of your file, after imports
+const PRODUCTS = [
+  { id: 1, name: 'Ordinaire' },
+  { id: 2, name: 'Bran' },
+  // Add more products as needed
+];
+
 // Add DateFilterType
 type DateFilterType = 'all' | 'day' | 'week' | 'month' | 'custom';
 
@@ -20,27 +27,39 @@ interface AddInventoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (item: Omit<InventoryItem, 'id'>) => void;
+  inventory: InventoryItem[]; // Add this line
 }
 
-// Add this component before the main InventoryPage component
-const AddInventoryModal = ({ isOpen, onClose, onAdd }: AddInventoryModalProps) => {
+// Update the AddInventoryModal component
+const AddInventoryModal = ({ isOpen, onClose, onAdd, inventory }: AddInventoryModalProps) => {
   const [newItem, setNewItem] = useState({
     name: '',
     quantity: 0,
-    Stocks: 'Rwamagana' as InventoryItem['Stocks'],  // Update this line
+    Stocks: 'Kicukiro' as InventoryItem['Stocks'],
     CurrentStock: 0,
     createdAt: new Date().toISOString().split('T')[0]
   });
 
+  // Find existing item's current stock
+  const existingItem = inventory.find(item => item.name === newItem.name);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAdd(newItem);
+    
+    // Calculate new current stock by adding quantity to existing stock
+    const updatedCurrentStock = (existingItem?.CurrentStock || 0) + newItem.quantity;
+    
+    onAdd({
+      ...newItem,
+      CurrentStock: updatedCurrentStock
+    });
+    
     onClose();
     // Reset form
     setNewItem({
       name: '',
       quantity: 0,
-      Stocks: 'Kicukiro' as InventoryItem['Stocks'],  // Update this line
+      Stocks: 'Kicukiro' as InventoryItem['Stocks'],
       CurrentStock: 0,
       createdAt: new Date().toISOString().split('T')[0]
     });
@@ -51,81 +70,69 @@ const AddInventoryModal = ({ isOpen, onClose, onAdd }: AddInventoryModalProps) =
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl w-[550px] max-h-[90vh] overflow-y-auto shadow-2xl">
-        {/* Enhanced Header */}
-        <div className="bg-green-500  px-3 py-4">
+        <div className="bg-green-500 px-3 py-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl px-40 font-bold text-white">Add New Inventory</h2>
+            <h2 className="text-2xl px-38 font-bold text-white">Add New Inventory</h2>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Item Name */}
+          {/* Product Selection Dropdown */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Product Name</label>
-            <input
-              type="text"
-              placeholder="Enter item name"
+            <select
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
               value={newItem.name}
               onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
               required
-            />
+            >
+              <option value="">Select a product</option>
+              {PRODUCTS.map(product => (
+                <option key={product.id} value={product.name}>
+                  {product.name}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* stock and Current stock row */}
+          {/* Display Current Stock (Read-only) */}
           <div className="grid grid-cols-2 gap-4">
-          <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Current stock</label>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Current Stock</label>
               <input
                 type="number"
-                placeholder="....."
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
-                value={newItem.CurrentStock}
-                onChange={(e) => setNewItem({ ...newItem, CurrentStock: Number(e.target.value) })}
-                required
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-100"
+                value={existingItem?.CurrentStock || 0}
+                readOnly
               />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Select Stock</label>
-              <div className="relative">
-                <select
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg appearance-none bg-gray-50 hover:bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                  value={newItem.Stocks}
-                  onChange={(e) => setNewItem({ ...newItem, Stocks: e.target.value as InventoryItem['Stocks'] })}
-                  required
-                >
-                  <option value="Raw Material">Kicukiro</option>
-                  <option value="Semi-Final">Kamonyi</option>
-                  <option value="Final Product">Rwamagana</option>
-                </select>
-                <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-              </div>
+              <select
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
+                value={newItem.Stocks}
+                onChange={(e) => setNewItem({ ...newItem, Stocks: e.target.value as InventoryItem['Stocks'] })}
+                required
+              >
+                <option value="Kicukiro">Kicukiro</option>
+                <option value="Kamonyi">Kamonyi</option>
+                <option value="Rwamagana">Rwamagana</option>
+              </select>
             </div>
-        
           </div>
 
-          {/* Quantity with icon */}
+          {/* Add Inventory Quantity */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Quantity</label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                </svg>
-              </span>
-              <input
-                type="number"
-                placeholder="Enter quantity"
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
-                value={newItem.quantity}
-                onChange={(e) => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
-                required
-              />
-            </div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Add Quantity</label>
+            <input
+              type="number"
+              placeholder="Enter quantity to add"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
+              value={newItem.quantity}
+              onChange={(e) => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
+              required
+              min="1"
+            />
           </div>
 
           {/* Action Buttons */}
@@ -141,9 +148,6 @@ const AddInventoryModal = ({ isOpen, onClose, onAdd }: AddInventoryModalProps) =
               type="submit"
               className="px-6 py-2.5 bg-green-500 text-white b hover:bg-green-600 transition-all duration-200 font-medium shadow-lg shadow-green-500/30 flex items-center gap-2"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
               Save
             </button>
           </div>
@@ -182,12 +186,12 @@ const EditInventoryModal = ({
             <h2 className="text-2xl px-40 font-bold text-white">Edit Inventory</h2>
           </div>
         </div>
-
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Product Name</label>
             <input
               type="text"
+              placeholder="Enter item name"
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
               value={editedItem.name}
               onChange={(e) => setEditedItem({ ...editedItem, name: e.target.value })}
@@ -241,7 +245,7 @@ const EditInventoryModal = ({
               Cancel
             </button>
             <button
-              type="submit"
+              type="submit"  
               className="px-6 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 font-medium shadow-lg shadow-green-500/30"
             >
               Save Changes
@@ -259,7 +263,7 @@ export default function InventoryPage() {
       id: 1, 
       name: 'Ordinaire', 
       quantity: 100, 
-      Stocks: 'Kicukiro', 
+      Stocks: 'Kicukiro',
       CurrentStock: 80,
       createdAt: '2025-03-22'
     },
@@ -313,13 +317,29 @@ export default function InventoryPage() {
   };
 
   const handleAddItem = (newItem: Omit<InventoryItem, 'id'>) => {
-    setInventory([
-      ...inventory,
-      {
-        ...newItem,
-        id: inventory.length + 1,
-      }
-    ]);
+    const existingItemIndex = inventory.findIndex(item => item.name === newItem.name);
+
+    if (existingItemIndex !== -1) {
+      // Update existing item
+      const updatedInventory = [...inventory];
+      updatedInventory[existingItemIndex] = {
+        ...updatedInventory[existingItemIndex],
+        quantity: newItem.quantity,
+        CurrentStock: newItem.CurrentStock,
+        Stocks: newItem.Stocks,
+        createdAt: newItem.createdAt
+      };
+      setInventory(updatedInventory);
+    } else {
+      // Add new item
+      setInventory([
+        ...inventory,
+        {
+          ...newItem,
+          id: inventory.length + 1,
+        }
+      ]);
+    }
   };
 
   // Add these new handlers before the return statement
@@ -455,6 +475,7 @@ export default function InventoryPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAdd={handleAddItem}
+        inventory={inventory} // Add this line
       />
 
       {selectedItem && (

@@ -2,35 +2,23 @@
 
 import { useState } from 'react';
 import { 
-  CreditCard, 
-  Search, 
-  Filter, 
-  Download,
-  Edit,
-  Trash2,
-  Plus,
-  Eye,
-  X
+   Edit, Trash2, Plus, Eye, X, Search 
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Update the Transaction interface
 interface Transaction {
   id: string;
   date: string;
   customerName: string;
   type: 'income' | 'expense';
   amount: number;
-  paid: number;
-  refund: number;
-  remained: number;
   paymentMethod: 'cash' | 'card' | 'bank transfer';
   status: 'completed' | 'pending' | 'failed';
   description: string;
 }
 
 export default function PaymentActions() {
-  // Update the initial transactions state
+  // States
   const [transactions, setTransactions] = useState<Transaction[]>([
     {
       id: '1',
@@ -38,9 +26,6 @@ export default function PaymentActions() {
       customerName: 'John Doe',
       type: 'income',
       amount: 1500.00,
-      paid: 1000.00,
-      refund: 0,
-      remained: 500.00,
       paymentMethod: 'cash',
       status: 'pending',
       description: 'Payment for Invoice #1234'
@@ -48,37 +33,30 @@ export default function PaymentActions() {
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'completed' | 'pending' | 'failed'>('all');
+  const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  // Update the form data state
+
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     customerName: '',
-    type: 'income' as 'income' | 'expense',
+    type: 'income' as const,
     amount: '',
-    paid: '',
-    refund: '0',
-    remained: '0',
-    paymentMethod: 'cash' as const,
-    status: 'pending' as const,
+    paymentMethod: 'cash' as 'cash' | 'card' | 'bank transfer',
+    status: 'pending' as 'completed' | 'pending' | 'failed',
     description: ''
   });
 
-  // Update the handleAddTransaction function
+  // Handlers
   const handleAddTransaction = (e: React.FormEvent) => {
     e.preventDefault();
     const newTransaction: Transaction = {
       id: (transactions.length + 1).toString(),
       ...formData,
-      amount: parseFloat(formData.amount),
-      paid: parseFloat(formData.paid),
-      refund: parseFloat(formData.refund),
-      remained: parseFloat(formData.remained)
+      amount: parseFloat(formData.amount)
     };
-    
     setTransactions(prev => [...prev, newTransaction]);
     setIsModalOpen(false);
     toast.success('Transaction added successfully');
@@ -89,9 +67,6 @@ export default function PaymentActions() {
       customerName: '',
       type: 'income',
       amount: '',
-      paid: '',
-      refund: '0',
-      remained: '0',
       paymentMethod: 'cash',
       status: 'pending',
       description: ''
@@ -110,7 +85,7 @@ export default function PaymentActions() {
     setIsViewModalOpen(true);
   };
 
-  const filteredTransactions = transactions.filter(transaction => {
+  const filteredTransactions = transactions.filter((transaction) => {
     const matchesSearch = transaction.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          transaction.id.includes(searchTerm);
     const matchesType = filterType === 'all' || transaction.type === filterType;
@@ -124,15 +99,15 @@ export default function PaymentActions() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Payment Actions</h1>
-          <p className="text-gray-600">Manage and track all payment transactions</p>
+          <h1 className="text-2xl font-bold text-gray-800">Other Payment Actions</h1>
+          <p className="text-gray-600">Manage and track all Other payment</p>
         </div>
         <button
           className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors"
           onClick={() => setIsModalOpen(true)}
         >
           <Plus size={20} />
-          New Transaction
+          Other Payments
         </button>
       </div>
 
@@ -152,7 +127,7 @@ export default function PaymentActions() {
           <select
             className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
             value={filterType}
-            onChange={(e) => setFilterType(e.target.value as any)}
+            onChange={(e) => setFilterType(e.target.value as 'all' | 'income' | 'expense')}
           >
             <option value="all">All Types</option>
             <option value="income">Income</option>
@@ -161,7 +136,7 @@ export default function PaymentActions() {
           <select
             className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as any)}
+            onChange={(e) => setFilterStatus(e.target.value as 'all' | 'completed' | 'pending' | 'failed')}
           >
             <option value="all">All Statuses</option>
             <option value="completed">Completed</option>
@@ -174,7 +149,6 @@ export default function PaymentActions() {
       {/* Transactions Table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <table className="w-full">
-          {/* Update the table header in the return statement */}
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
@@ -182,9 +156,6 @@ export default function PaymentActions() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Refund</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remained</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
@@ -206,25 +177,9 @@ export default function PaymentActions() {
                     {transaction.type}
                   </span>
                 </td>
-                {/* Update the table row content */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <span className={transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}>
                     ${transaction.amount.toFixed(2)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <span className="text-green-600">
-                    ${transaction.paid.toFixed(2)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <span className="text-red-600">
-                    ${transaction.refund.toFixed(2)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <span className="text-blue-600">
-                    ${transaction.remained.toFixed(2)}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -271,142 +226,88 @@ export default function PaymentActions() {
 
       {/* Add Transaction Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-full max-w-md">
-            <div className="flex justify-between items-center p-4 border-b">
-              <h2 className="text-xl font-semibold">New Transaction</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Add New Transaction</h3>
+              <button 
+                className="text-gray-500 hover:text-gray-800"
+                onClick={() => setIsModalOpen(false)}
+              >
                 <X size={20} />
               </button>
             </div>
-            
-            {/* Update the form in the Add Transaction Modal */}
-            <form onSubmit={handleAddTransaction} className="p-4 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                <input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-                  className="w-full p-2 border rounded-lg"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
+
+            <form onSubmit={handleAddTransaction}>
+              <div className="mb-4">
+                <label htmlFor="customerName" className="block text-sm font-medium text-gray-700">Customer Name</label>
                 <input
                   type="text"
+                  id="customerName"
+                  className="mt-1 p-2 w-full border border-gray-300 rounded-lg"
                   value={formData.customerName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
-                  className="w-full p-2 border rounded-lg"
+                  onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
                   required
                 />
               </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as 'income' | 'expense' }))}
-                    className="w-full p-2 border rounded-lg"
-                  >
-                    <option value="income">Income</option>
-                    <option value="expense">Expense</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                  <input
-                    type="number"
-                    value={formData.amount}
-                    onChange={(e) => {
-                      const amount = e.target.value;
-                      const paid = formData.paid || '0';
-                      const remained = (parseFloat(amount) - parseFloat(paid)).toString();
-                      setFormData(prev => ({ 
-                        ...prev, 
-                        amount,
-                        remained 
-                      }));
-                    }}
-                    className="w-full p-2 border rounded-lg"
-                    required
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Paid Amount</label>
-                  <input
-                    type="number"
-                    value={formData.paid}
-                    onChange={(e) => {
-                      const paid = e.target.value;
-                      const amount = formData.amount || '0';
-                      const remained = (parseFloat(amount) - parseFloat(paid)).toString();
-                      setFormData(prev => ({ 
-                        ...prev, 
-                        paid,
-                        remained 
-                      }));
-                    }}
-                    className="w-full p-2 border rounded-lg"
-                    required
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Refund Amount</label>
-                  <input
-                    type="number"
-                    value={formData.refund}
-                    onChange={(e) => setFormData(prev => ({ ...prev, refund: e.target.value }))}
-                    className="w-full p-2 border rounded-lg"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Remaining Amount</label>
-                  <input
-                    type="number"
-                    value={formData.remained}
-                    className="w-full p-2 border rounded-lg bg-gray-50"
-                    readOnly
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full p-2 border rounded-lg"
-                  rows={3}
+
+              <div className="mb-4">
+                <label htmlFor="amount" className="block text-sm font-medium text-gray-700">Amount</label>
+                <input
+                  type="number"
+                  id="amount"
+                  className="mt-1 p-2 w-full border border-gray-300 rounded-lg"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  required
                 />
               </div>
-              
-              <div className="flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+
+              <div className="mb-4">
+                <label htmlFor="paymentMethod" className="block text-sm font-medium text-gray-700">Payment Method</label>
+                <select
+                  id="paymentMethod"
+                  className="mt-1 p-2 w-full border border-gray-300 rounded-lg"
+                  value={formData.paymentMethod}
+                  onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value as 'cash' | 'card' | 'bank transfer' })}
                 >
-                  Cancel
-                </button>
+                  <option value="cash">Cash</option>
+                  <option value="card">Card</option>
+                  <option value="bank transfer">Bank Transfer</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+                <select
+                  id="status"
+                  className="mt-1 p-2 w-full border border-gray-300 rounded-lg"
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value as 'completed' | 'pending' | 'failed' })}
+                >
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                  <option value="failed">Failed</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+                <textarea
+                  id="description"
+                  rows={3}
+                  className="mt-1 p-2 w-full border border-gray-300 rounded-lg"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                />
+              </div>
+
+              <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                  className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
                 >
-                  Save Transaction
+                  Add Transaction
                 </button>
               </div>
             </form>
@@ -414,48 +315,38 @@ export default function PaymentActions() {
         </div>
       )}
 
-      {/* View Transaction Modal */}
+      {/* View Details Modal */}
       {isViewModalOpen && selectedTransaction && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-full max-w-md p-6">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg w-96">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Transaction Details</h2>
+              <h3 className="text-lg font-semibold">Transaction Details</h3>
               <button 
+                className="text-gray-500 hover:text-gray-800"
                 onClick={() => setIsViewModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
               >
                 <X size={20} />
               </button>
             </div>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-500">Transaction ID</p>
-                <p className="font-medium">#{selectedTransaction.id}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Date</p>
-                <p className="font-medium">{new Date(selectedTransaction.date).toLocaleDateString()}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Customer</p>
-                <p className="font-medium">{selectedTransaction.customerName}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Amount</p>
-                <p className="font-medium">${selectedTransaction.amount.toFixed(2)}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Type</p>
-                <p className="font-medium">{selectedTransaction.type}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Status</p>
-                <p className="font-medium">{selectedTransaction.status}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Description</p>
-                <p className="font-medium">{selectedTransaction.description}</p>
-              </div>
+
+            <div>
+              <p><strong>ID:</strong> {selectedTransaction.id}</p>
+              <p><strong>Customer:</strong> {selectedTransaction.customerName}</p>
+              <p><strong>Type:</strong> {selectedTransaction.type}</p>
+              <p><strong>Amount:</strong> ${selectedTransaction.amount.toFixed(2)}</p>
+              <p><strong>Status:</strong> {selectedTransaction.status}</p>
+              <p><strong>Description:</strong> {selectedTransaction.description}</p>
+              <p><strong>Payment Method:</strong> {selectedTransaction.paymentMethod}</p>
+              <p><strong>Date:</strong> {new Date(selectedTransaction.date).toLocaleDateString()}</p>
+            </div>
+
+            <div className="mt-4 flex justify-end">
+              <button 
+                className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600"
+                onClick={() => setIsViewModalOpen(false)}
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
