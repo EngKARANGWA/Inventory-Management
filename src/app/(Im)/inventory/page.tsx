@@ -68,92 +68,95 @@ const AddInventoryModal = ({ isOpen, onClose, onAdd, inventory }: AddInventoryMo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl w-[550px] max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="bg-green-500 px-3 py-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl px-38 font-bold text-white">Add New Inventory</h2>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Product Selection Dropdown */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Product Name</label>
-            <select
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
-              value={newItem.name}
-              onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-              required
-            >
-              <option value="">Select a product</option>
-              {PRODUCTS.map(product => (
-                <option key={product.id} value={product.name}>
-                  {product.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Display Current Stock (Read-only) */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Current Stock</label>
-              <input
-                type="number"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-100"
-                value={existingItem?.CurrentStock || 0}
-                readOnly
-              />
+    <>
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-600/70 to-gray-900/70 backdrop-blur-sm z-40" />
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl w-[550px] max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="bg-green-500 px-3 py-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl px-38 font-bold text-white">Add New Inventory</h2>
             </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            {/* Product Selection Dropdown */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Select Stock</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Product Name</label>
               <select
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
-                value={newItem.Stocks}
-                onChange={(e) => setNewItem({ ...newItem, Stocks: e.target.value as InventoryItem['Stocks'] })}
+                value={newItem.name}
+                onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
                 required
               >
-                <option value="Kicukiro">Kicukiro</option>
-                <option value="Kamonyi">Kamonyi</option>
-                <option value="Rwamagana">Rwamagana</option>
+                <option value="">Select a product</option>
+                {PRODUCTS.map(product => (
+                  <option key={product.id} value={product.name}>
+                    {product.name}
+                  </option>
+                ))}
               </select>
             </div>
-          </div>
 
-          {/* Add Inventory Quantity */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Add Quantity</label>
-            <input
-              type="number"
-              placeholder="Enter quantity to add"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
-              value={newItem.quantity}
-              onChange={(e) => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
-              required
-              min="1"
-            />
-          </div>
+            {/* Display Current Stock (Read-only) */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Current Stock</label>
+                <input
+                  type="number"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-100"
+                  value={existingItem?.CurrentStock || 0}
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Select Stock</label>
+                <select
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
+                  value={newItem.Stocks}
+                  onChange={(e) => setNewItem({ ...newItem, Stocks: e.target.value as InventoryItem['Stocks'] })}
+                  required
+                >
+                  <option value="Kicukiro">Kicukiro</option>
+                  <option value="Kamonyi">Kamonyi</option>
+                  <option value="Rwamagana">Rwamagana</option>
+                </select>
+              </div>
+            </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2.5 bg-green-500 text-white b hover:bg-green-600 transition-all duration-200 font-medium shadow-lg shadow-green-500/30 flex items-center gap-2"
-            >
-              Save
-            </button>
-          </div>
-        </form>
+            {/* Add Inventory Quantity */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Add Quantity</label>
+              <input
+                type="number"
+                placeholder="Enter quantity to add"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
+                value={newItem.quantity}
+                onChange={(e) => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
+                required
+                min="1"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-gray-200">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2.5 bg-green-500 text-white b hover:bg-green-600 transition-all duration-200 font-medium shadow-lg shadow-green-500/30 flex items-center gap-2"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -179,81 +182,84 @@ const EditInventoryModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl w-[550px] max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="bg-green-500 px-3 py-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl px-40 font-bold text-white">Edit Inventory</h2>
+    <>
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-600/70 to-gray-900/70 backdrop-blur-sm z-40" />
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl w-[550px] max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="bg-green-500 px-3 py-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl px-40 font-bold text-white">Edit Inventory</h2>
+            </div>
           </div>
-        </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Product Name</label>
-            <input
-              type="text"
-              placeholder="Enter item name"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
-              value={editedItem.name}
-              onChange={(e) => setEditedItem({ ...editedItem, name: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="p-6 space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Current Stock</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Product Name</label>
               <input
-                type="number"
+                type="text"
+                placeholder="Enter item name"
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
-                value={editedItem.CurrentStock}
-                onChange={(e) => setEditedItem({ ...editedItem, CurrentStock: Number(e.target.value) })}
+                value={editedItem.name}
+                onChange={(e) => setEditedItem({ ...editedItem, name: e.target.value })}
                 required
               />
             </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Stock Location</label>
-              <select
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
-                value={editedItem.Stocks}
-                onChange={(e) => setEditedItem({ ...editedItem, Stocks: e.target.value as InventoryItem['Stocks'] })}
-                required
-              >
-                <option value="Kicukiro">Kicukiro</option>
-                <option value="Kamonyi">Kamonyi</option>
-                <option value="Rwamagana">Rwamagana</option>
-              </select>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Current Stock</label>
+                <input
+                  type="number"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
+                  value={editedItem.CurrentStock}
+                  onChange={(e) => setEditedItem({ ...editedItem, CurrentStock: Number(e.target.value) })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Stock Location</label>
+                <select
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
+                  value={editedItem.Stocks}
+                  onChange={(e) => setEditedItem({ ...editedItem, Stocks: e.target.value as InventoryItem['Stocks'] })}
+                  required
+                >
+                  <option value="Kicukiro">Kicukiro</option>
+                  <option value="Kamonyi">Kamonyi</option>
+                  <option value="Rwamagana">Rwamagana</option>
+                </select>
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Quantity</label>
-            <input
-              type="number"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
-              value={editedItem.quantity}
-              onChange={(e) => setEditedItem({ ...editedItem, quantity: Number(e.target.value) })}
-              required
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Quantity</label>
+              <input
+                type="number"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50 hover:bg-white"
+                value={editedItem.quantity}
+                onChange={(e) => setEditedItem({ ...editedItem, quantity: Number(e.target.value) })}
+                required
+              />
+            </div>
 
-          <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"  
-              className="px-6 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 font-medium shadow-lg shadow-green-500/30"
-            >
-              Save Changes
-            </button>
-          </div>
-        </form>
+            <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-gray-200">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"  
+                className="px-6 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 font-medium shadow-lg shadow-green-500/30"
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -378,7 +384,7 @@ export default function InventoryPage() {
           className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
           onClick={() => setIsModalOpen(true)}
         >
-          Add New Item
+          Add New Inventory
         </button>
       </div>
       
@@ -431,36 +437,36 @@ export default function InventoryPage() {
         <table className="min-w-full bg-white border rounded-lg">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current stock</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">ID</th>
+              <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current stock</th>
+              <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+              <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+              <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+              <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredItems.map((item) => (
-              <tr key={item.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">{item.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.CurrentStock}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.quantity}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.Stocks}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
+          <tbody className="divide-y divide-gray-100">
+            {filteredItems.map((item, index) => (
+              <tr key={item.id} className={`transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'} hover:bg-gray-100/70`}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.id}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">{item.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.CurrentStock.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.quantity.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.Stocks.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                   {new Date(item.createdAt).toLocaleDateString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                   <button 
                     onClick={() => handleEditClick(item)}
-                    className="bg-green-500 text-white px-3 py-1 rounded-md mr-2 hover:bg-green-600 transition-colors"
+                    className="bg-green-500 text-white px-3 py-1 rounded-md mr-2 hover:bg-green-600 transition-colors duration-150"
                   >
                     Edit
                   </button>
                   <button 
                     onClick={() => handleDeleteClick(item.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
+                    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors duration-150"
                   >
                     Delete
                   </button>

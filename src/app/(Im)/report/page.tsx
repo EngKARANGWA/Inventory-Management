@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-import * as XLSX from 'xlsx';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -119,14 +118,16 @@ export default function ReportPage() {
       }
     });
     
+    // Add chart as image
+    const chartCanvas = document.querySelector('canvas');
+    if (chartCanvas) {
+      const chartImage = chartCanvas.toDataURL('image/png');
+      doc.addPage();
+      doc.text('Report Chart', 20, 20);
+      doc.addImage(chartImage, 'PNG', 20, 30, 170, 100);
+    }
+    
     doc.save(`maize-factory-report-${dateRange}-${reportType}.pdf`);
-  };
-
-  const downloadExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(reportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Report');
-    XLSX.writeFile(workbook, `maize-factory-report-${dateRange}-${reportType}.xlsx`);
   };
 
   const chartData = {
@@ -157,14 +158,14 @@ export default function ReportPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header Section with Download Buttons */}
+      {/* Header Section with Download Button */}
       <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Maize Factory Report</h1>
             <p className="text-gray-600 mt-1">View and analyze factory performance metrics</p>
           </div>
-          <div className="flex gap-4">
+          <div>
             <button
               onClick={downloadPDF}
               className="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
@@ -173,15 +174,6 @@ export default function ReportPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
               Download PDF
-            </button>
-            <button
-              onClick={downloadExcel}
-              className="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Download Excel
             </button>
           </div>
         </div>

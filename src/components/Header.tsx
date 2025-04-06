@@ -117,7 +117,7 @@ const Header = () => {
       {/* Logout Section */}
       <div className="p-4 bg-gray-50 border-t">
         <Link 
-          href="/logout"
+          href=""
           className="flex items-center text-gray-600 hover:text-gray-800"
         >
           <LogOut className="w-5 h-5 mr-2" />
