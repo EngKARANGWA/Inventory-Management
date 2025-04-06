@@ -2,30 +2,43 @@
 
 import { useState, useEffect } from 'react';
 
-// Define all possible roles as a type
-type Role = 'Admin' | 'Stock Keeper' | 'Cashier' | 'Production' | 'Client' | 'Supplier' | 'Employee' | 'Manager';
+// Define all possible roles
+type UserRole = 
+  | 'Blocker' 
+  | 'Scale Monitor' 
+  | 'Saler' 
+  | 'Stock Keeper' 
+  | 'Client' 
+  | 'Driver' 
+  | 'Supplier' 
+  | 'Production Manager' 
+  | 'Cashier'
+  | 'Admin';
 
 interface User {
   id: number;
-  name: string;
-  email: string;
-  roles: Role[]; // Changed from role to roles (array)
+  names: string;
+  phoneNumber: string;
+  address: string;
+  roles: UserRole[];
   status: 'Active' | 'Inactive';
   joinDate: string;
-  phone: string;
+  // Additional role-specific fields
+  licenseNumber?: string;
+  district?: string;
+  sector?: string;
+  cell?: string;
 }
 
 interface UserFormData {
-  // Step 1: Personal Details
-  name: string;
-  email: string;
-  phone: string;
+  names: string;
+  phoneNumber: string;
   address: string;
-  
-  // Step 2: Role Assignment
-  roles: Role[]; // Changed to array of roles
-  
-  // Step 3: Password (optional if using email setup)
+  selectedRoles: UserRole[];
+  licenseNumber?: string;
+  district?: string;
+  sector?: string;
+  cell?: string;
   password?: string;
   sendSetupEmail: boolean;
 }
@@ -46,28 +59,33 @@ interface EditUserModalProps {
 const AddUserModal = ({ isOpen, onClose, onAdd }: AddUserModalProps) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<UserFormData>({
-    name: '',
-    email: '',
-    phone: '',
+    names: '',
+    phoneNumber: '',
     address: '',
-    roles: ['Stock Keeper'], // Initialize with one role
+    selectedRoles: ['Stock Keeper'],
     sendSetupEmail: true
   });
 
-  const allRoles: Role[] = ['Admin', 'Stock Keeper', 'Cashier', 'Production', 'Client', 'Supplier', 'Employee', 'Manager'];
+  const allRoles: UserRole[] = [
+    'Admin',
+    'Blocker',
+    'Scale Monitor',
+    'Saler',
+    'Stock Keeper',
+    'Client',
+    'Driver',
+    'Supplier',
+    'Production Manager',
+    'Cashier'
+  ];
 
-  const handleRoleChange = (role: Role, isChecked: boolean) => {
-    if (isChecked) {
-      setFormData({
-        ...formData,
-        roles: [...formData.roles, role]
-      });
-    } else {
-      setFormData({
-        ...formData,
-        roles: formData.roles.filter(r => r !== role)
-      });
-    }
+  const handleRoleToggle = (role: UserRole) => {
+    setFormData(prev => {
+      const newRoles = prev.selectedRoles.includes(role)
+        ? prev.selectedRoles.filter(r => r !== role)
+        : [...prev.selectedRoles, role];
+      return { ...prev, selectedRoles: newRoles };
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -93,7 +111,6 @@ const AddUserModal = ({ isOpen, onClose, onAdd }: AddUserModalProps) => {
             </button>
           </div>
 
-          {/* Progress Steps */}
           <div className="mb-8">
             <div className="flex justify-between">
               {[1, 2, 3, 4].map((num) => (
@@ -110,31 +127,22 @@ const AddUserModal = ({ isOpen, onClose, onAdd }: AddUserModalProps) => {
           </div>
 
           <form onSubmit={handleSubmit}>
-            {/* Step 1: Personal Details */}
             {step === 1 && (
               <div className="space-y-4">
                 <input
                   type="text"
-                  placeholder="Full Name"
+                  placeholder="Full Names"
                   className="w-full px-4 py-2 border rounded-lg"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className="w-full px-4 py-2 border rounded-lg"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={formData.names}
+                  onChange={(e) => setFormData({ ...formData, names: e.target.value })}
                   required
                 />
                 <input
                   type="tel"
                   placeholder="Phone Number"
                   className="w-full px-4 py-2 border rounded-lg"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                   required
                 />
                 <textarea
@@ -147,20 +155,18 @@ const AddUserModal = ({ isOpen, onClose, onAdd }: AddUserModalProps) => {
               </div>
             )}
 
-            {/* Step 2: Role Assignment */}
             {step === 2 && (
               <div className="space-y-4">
-                <h3 className="font-medium">Select Roles</h3>
-                <p className="text-sm text-gray-500 mb-2">User can have multiple roles</p>
+                <h3 className="font-medium">Select Roles (can choose multiple)</h3>
                 <div className="grid grid-cols-2 gap-2">
-                  {allRoles.map((role) => (
+                  {allRoles.map(role => (
                     <div key={role} className="flex items-center">
                       <input
                         type="checkbox"
                         id={`role-${role}`}
-                        checked={formData.roles.includes(role)}
-                        onChange={(e) => handleRoleChange(role, e.target.checked)}
-                        className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                        checked={formData.selectedRoles.includes(role)}
+                        onChange={() => handleRoleToggle(role)}
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <label htmlFor={`role-${role}`} className="ml-2 text-sm text-gray-700">
                         {role}
@@ -168,13 +174,59 @@ const AddUserModal = ({ isOpen, onClose, onAdd }: AddUserModalProps) => {
                     </div>
                   ))}
                 </div>
-                {formData.roles.length === 0 && (
-                  <p className="text-sm text-red-500">Please select at least one role</p>
+
+                {formData.selectedRoles.includes('Driver') && (
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700">Driver License Number</label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-2 border rounded-lg mt-1"
+                      value={formData.licenseNumber || ''}
+                      onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
+                      required={formData.selectedRoles.includes('Driver')}
+                    />
+                  </div>
+                )}
+
+                {formData.selectedRoles.includes('Supplier') && (
+                  <div className="mt-4 space-y-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">District</label>
+                        <input
+                          type="text"
+                          className="w-full px-4 py-2 border rounded-lg mt-1"
+                          value={formData.district || ''}
+                          onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                          required={formData.selectedRoles.includes('Supplier')}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Sector</label>
+                        <input
+                          type="text"
+                          className="w-full px-4 py-2 border rounded-lg mt-1"
+                          value={formData.sector || ''}
+                          onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
+                          required={formData.selectedRoles.includes('Supplier')}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Cell</label>
+                        <input
+                          type="text"
+                          className="w-full px-4 py-2 border rounded-lg mt-1"
+                          value={formData.cell || ''}
+                          onChange={(e) => setFormData({ ...formData, cell: e.target.value })}
+                          required={formData.selectedRoles.includes('Supplier')}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
             )}
 
-            {/* Step 3: Password Setup */}
             {step === 3 && (
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
@@ -199,15 +251,24 @@ const AddUserModal = ({ isOpen, onClose, onAdd }: AddUserModalProps) => {
               </div>
             )}
 
-            {/* Step 4: Review */}
             {step === 4 && (
               <div className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="font-bold mb-2">Review User Details</h3>
-                  <p><span className="font-semibold">Name:</span> {formData.name}</p>
-                  <p><span className="font-semibold">Email:</span> {formData.email}</p>
-                  <p><span className="font-semibold">Phone:</span> {formData.phone}</p>
-                  <p><span className="font-semibold">Roles:</span> {formData.roles.join(', ')}</p>
+                  <p><span className="font-semibold">Names:</span> {formData.names}</p>
+                  <p><span className="font-semibold">Phone:</span> {formData.phoneNumber}</p>
+                  <p><span className="font-semibold">Address:</span> {formData.address}</p>
+                  <p><span className="font-semibold">Roles:</span> {formData.selectedRoles.join(', ')}</p>
+                  {formData.selectedRoles.includes('Driver') && (
+                    <p><span className="font-semibold">License Number:</span> {formData.licenseNumber}</p>
+                  )}
+                  {formData.selectedRoles.includes('Supplier') && (
+                    <>
+                      <p><span className="font-semibold">District:</span> {formData.district}</p>
+                      <p><span className="font-semibold">Sector:</span> {formData.sector}</p>
+                      <p><span className="font-semibold">Cell:</span> {formData.cell}</p>
+                    </>
+                  )}
                   <p><span className="font-semibold">Setup Method:</span> {formData.sendSetupEmail ? 'Email Setup Link' : 'Manual Password'}</p>
                 </div>
               </div>
@@ -226,16 +287,8 @@ const AddUserModal = ({ isOpen, onClose, onAdd }: AddUserModalProps) => {
               {step < 4 ? (
                 <button
                   type="button"
-                  onClick={() => {
-                    if (step === 2 && formData.roles.length === 0) return;
-                    setStep(step + 1);
-                  }}
-                  className={`px-4 py-2 rounded-lg ${
-                    step === 2 && formData.roles.length === 0
-                      ? 'bg-gray-300 cursor-not-allowed'
-                      : 'bg-blue-500 hover:bg-blue-600 text-white'
-                  }`}
-                  disabled={step === 2 && formData.roles.length === 0}
+                  onClick={() => setStep(step + 1)}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                 >
                   Next
                 </button>
@@ -256,17 +309,32 @@ const AddUserModal = ({ isOpen, onClose, onAdd }: AddUserModalProps) => {
 };
 
 const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSave, user }) => {
-  const allRoles: Role[] = ['Admin', 'Stock Keeper', 'Cashier', 'Production', 'Client', 'Supplier', 'Employee', 'Manager'];
-  
   const [editedUser, setEditedUser] = useState<User>({
     id: user?.id || 0,
-    name: user?.name || '',
-    email: user?.email || '',
-    roles: user?.roles || ['Employee'],
+    names: user?.names || '',
+    phoneNumber: user?.phoneNumber || '',
+    address: user?.address || '',
+    roles: user?.roles || ['Stock Keeper'],
     status: user?.status || 'Active',
     joinDate: user?.joinDate || new Date().toISOString().split('T')[0],
-    phone: user?.phone || ''
+    licenseNumber: user?.licenseNumber || '',
+    district: user?.district || '',
+    sector: user?.sector || '',
+    cell: user?.cell || ''
   });
+
+  const allRoles: UserRole[] = [
+    'Admin',
+    'Blocker',
+    'Scale Monitor',
+    'Saler',
+    'Stock Keeper',
+    'Client',
+    'Driver',
+    'Supplier',
+    'Production Manager',
+    'Cashier'
+  ];
 
   useEffect(() => {
     if (user) {
@@ -274,23 +342,17 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSave, 
     }
   }, [user]);
 
-  const handleRoleChange = (role: Role, isChecked: boolean) => {
-    if (isChecked) {
-      setEditedUser({
-        ...editedUser,
-        roles: [...editedUser.roles, role]
-      });
-    } else {
-      setEditedUser({
-        ...editedUser,
-        roles: editedUser.roles.filter(r => r !== role)
-      });
-    }
+  const handleRoleToggle = (role: UserRole) => {
+    setEditedUser(prev => {
+      const newRoles = prev.roles.includes(role)
+        ? prev.roles.filter(r => r !== role)
+        : [...prev.roles, role];
+      return { ...prev, roles: newRoles };
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (editedUser.roles.length === 0) return;
     onSave(editedUser);
   };
 
@@ -300,7 +362,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSave, 
     <>
       <div className="fixed inset-0 bg-gradient-to-br from-gray-600/70 to-gray-900/70 backdrop-blur-sm z-40" />
       <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg w-[500px] max-h-[90vh] overflow-y-auto">
+        <div className="bg-white p-6 rounded-lg w-[600px] max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold">Edit User</h2>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -313,32 +375,39 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSave, 
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
-              placeholder="Name"
+              placeholder="Names"
               className="w-full px-4 py-2 border rounded-lg"
-              value={editedUser.name}
-              onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
+              value={editedUser.names}
+              onChange={(e) => setEditedUser({ ...editedUser, names: e.target.value })}
               required
             />
             <input
-              type="email"
-              placeholder="Email"
+              type="tel"
+              placeholder="Phone Number"
               className="w-full px-4 py-2 border rounded-lg"
-              value={editedUser.email}
-              onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
+              value={editedUser.phoneNumber}
+              onChange={(e) => setEditedUser({ ...editedUser, phoneNumber: e.target.value })}
               required
             />
-            
-            <div>
-              <h3 className="font-medium mb-2">Roles</h3>
+            <textarea
+              placeholder="Address"
+              className="w-full px-4 py-2 border rounded-lg"
+              value={editedUser.address}
+              onChange={(e) => setEditedUser({ ...editedUser, address: e.target.value })}
+              required
+            />
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Roles</label>
               <div className="grid grid-cols-2 gap-2">
-                {allRoles.map((role) => (
+                {allRoles.map(role => (
                   <div key={role} className="flex items-center">
                     <input
                       type="checkbox"
                       id={`edit-role-${role}`}
                       checked={editedUser.roles.includes(role)}
-                      onChange={(e) => handleRoleChange(role, e.target.checked)}
-                      className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                      onChange={() => handleRoleToggle(role)}
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <label htmlFor={`edit-role-${role}`} className="ml-2 text-sm text-gray-700">
                       {role}
@@ -346,11 +415,56 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSave, 
                   </div>
                 ))}
               </div>
-              {editedUser.roles.length === 0 && (
-                <p className="text-sm text-red-500">Please select at least one role</p>
-              )}
             </div>
-            
+
+            {editedUser.roles.includes('Driver') && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Driver License Number</label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-2 border rounded-lg mt-1"
+                  value={editedUser.licenseNumber || ''}
+                  onChange={(e) => setEditedUser({ ...editedUser, licenseNumber: e.target.value })}
+                  required={editedUser.roles.includes('Driver')}
+                />
+              </div>
+            )}
+
+            {editedUser.roles.includes('Supplier') && (
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">District</label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-2 border rounded-lg mt-1"
+                    value={editedUser.district || ''}
+                    onChange={(e) => setEditedUser({ ...editedUser, district: e.target.value })}
+                    required={editedUser.roles.includes('Supplier')}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Sector</label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-2 border rounded-lg mt-1"
+                    value={editedUser.sector || ''}
+                    onChange={(e) => setEditedUser({ ...editedUser, sector: e.target.value })}
+                    required={editedUser.roles.includes('Supplier')}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Cell</label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-2 border rounded-lg mt-1"
+                    value={editedUser.cell || ''}
+                    onChange={(e) => setEditedUser({ ...editedUser, cell: e.target.value })}
+                    required={editedUser.roles.includes('Supplier')}
+                  />
+                </div>
+              </div>
+            )}
+
             <select
               className="w-full px-4 py-2 border rounded-lg"
               value={editedUser.status}
@@ -359,7 +473,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSave, 
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
-            
+
             <div className="flex justify-end gap-2 mt-6">
               <button
                 type="button"
@@ -370,12 +484,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSave, 
               </button>
               <button
                 type="submit"
-                className={`px-4 py-2 rounded-lg ${
-                  editedUser.roles.length === 0
-                    ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-blue-500 hover:bg-blue-600 text-white'
-                }`}
-                disabled={editedUser.roles.length === 0}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
               >
                 Save Changes
               </button>
@@ -387,24 +496,28 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSave, 
   );
 };
 
-const getRoleColor = (role: Role) => {
+const getRoleColor = (role: UserRole) => {
   switch (role) {
     case 'Admin':
       return 'bg-purple-100 text-purple-800';
+    case 'Blocker':
+      return 'bg-red-100 text-red-800';
+    case 'Scale Monitor':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'Saler':
+      return 'bg-green-100 text-green-800';
     case 'Stock Keeper':
       return 'bg-blue-100 text-blue-800';
-    case 'Cashier':
-      return 'bg-green-100 text-green-800';
     case 'Client':
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-indigo-100 text-indigo-800';
+    case 'Driver':
+      return 'bg-pink-100 text-pink-800';
     case 'Supplier':
       return 'bg-orange-100 text-orange-800';
-    case 'Production':
-      return 'bg-indigo-100 text-indigo-800';
-    case 'Employee':
-      return 'bg-gray-100 text-gray-800';
-    case 'Manager':
+    case 'Production Manager':
       return 'bg-teal-100 text-teal-800';
+    case 'Cashier':
+      return 'bg-cyan-100 text-cyan-800';
     default:
       return 'bg-gray-100 text-gray-800';
   }
@@ -414,30 +527,43 @@ export default function UserPage() {
   const [users, setUsers] = useState<User[]>([
     {
       id: 1,
-      name: 'John Doe',
-      email: 'john@example.com',
-      roles: ['Admin', 'Manager'],
+      names: 'John Doe',
+      phoneNumber: '123-456-7890',
+      address: '123 Main St',
+      roles: ['Admin', 'Stock Keeper'],
       status: 'Active',
-      joinDate: '2025-01-01',
-      phone: '123-456-7890'
+      joinDate: '2025-01-01'
     },
     {
       id: 2,
-      name: 'Jane Smith',
-      email: 'jane@example.com',
+      names: 'Jane Smith',
+      phoneNumber: '098-765-4321',
+      address: '456 Oak Ave',
       roles: ['Cashier'],
       status: 'Active',
-      joinDate: '2025-02-15',
-      phone: '098-765-4321'
+      joinDate: '2025-02-15'
     },
     {
       id: 3,
-      name: 'Bob Johnson',
-      email: 'bob@example.com',
-      roles: ['Stock Keeper', 'Production'],
+      names: 'Mike Johnson',
+      phoneNumber: '555-123-4567',
+      address: '789 Pine Rd',
+      roles: ['Driver'],
       status: 'Active',
       joinDate: '2025-03-10',
-      phone: '555-123-4567'
+      licenseNumber: 'DRV123456'
+    },
+    {
+      id: 4,
+      names: 'Sarah Williams',
+      phoneNumber: '555-987-6543',
+      address: '321 Elm Blvd',
+      roles: ['Supplier'],
+      status: 'Active',
+      joinDate: '2025-04-05',
+      district: 'Kicukiro',
+      sector: 'Gikondo',
+      cell: 'Kanserege'
     }
   ]);
 
@@ -454,21 +580,24 @@ export default function UserPage() {
   };
 
   const filteredUsers = users.filter(user =>
-    (user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     user.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (roleFilter === 'all' || user.roles.includes(roleFilter as Role)) &&
+    (user.names.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (roleFilter === 'all' || user.roles.includes(roleFilter as UserRole)) &&
     (statusFilter === 'all' || user.status === statusFilter)
   );
 
   const handleAddUser = (userData: UserFormData) => {
     const newUser: User = {
       id: users.length + 1,
-      name: userData.name,
-      email: userData.email,
-      roles: userData.roles,
+      names: userData.names,
+      phoneNumber: userData.phoneNumber,
+      address: userData.address,
+      roles: userData.selectedRoles,
       status: 'Active',
       joinDate: new Date().toISOString().split('T')[0],
-      phone: userData.phone
+      licenseNumber: userData.licenseNumber,
+      district: userData.district,
+      sector: userData.sector,
+      cell: userData.cell
     };
     setUsers([...users, newUser]);
   };
@@ -481,7 +610,7 @@ export default function UserPage() {
   const confirmDeactivation = () => {
     if (selectedUser) {
       setUsers(users.map(u => 
-        u.id === selectedUser.id ? { ...u, status: 'Inactive' } : u
+        u.id === selectedUser.id ? { ...u, status: u.status === 'Active' ? 'Inactive' : 'Active' } : u
       ));
     }
     setIsConfirmDialogOpen(false);
@@ -506,19 +635,17 @@ export default function UserPage() {
         <p className="text-gray-600">Manage system users and their roles</p>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-        {['Admin', 'Stock Keeper', 'Cashier', 'Client', 'Supplier', 'Production'].map((role) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+        {['Admin', 'Stock Keeper', 'Cashier', 'Driver', 'Supplier'].map((role) => (
           <div key={role} className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <div className="text-sm text-gray-500 mb-1">{role}s</div>
             <div className="text-2xl font-bold text-gray-800">
-              {users.filter(user => user.roles.includes(role as Role)).length}
+              {users.filter(user => user.roles.includes(role as UserRole)).length}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Enhanced Filters Section */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
         <div className="p-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-800">Filters & Search</h2>
@@ -550,13 +677,15 @@ export default function UserPage() {
             >
               <option value="all">All Roles</option>
               <option value="Admin">Admin</option>
+              <option value="Blocker">Blocker</option>
+              <option value="Scale Monitor">Scale Monitor</option>
+              <option value="Saler">Saler</option>
               <option value="Stock Keeper">Stock Keeper</option>
-              <option value="Cashier">Cashier</option>
               <option value="Client">Client</option>
+              <option value="Driver">Driver</option>
               <option value="Supplier">Supplier</option>
-              <option value="Production">Production</option>
-              <option value="Employee">Employee</option>
-              <option value="Manager">Manager</option>
+              <option value="Production Manager">Production Manager</option>
+              <option value="Cashier">Cashier</option>
             </select>
 
             <select
@@ -572,7 +701,6 @@ export default function UserPage() {
         </div>
       </div>
 
-      {/* Enhanced Table Section */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-4 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-800">User List</h2>
@@ -591,8 +719,8 @@ export default function UserPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Name</th>
-                <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Names</th>
+                <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
                 <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roles</th>
                 <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</th>
@@ -602,8 +730,8 @@ export default function UserPage() {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredUsers.map((user, index) => (
                 <tr key={user.id} className={`transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'} hover:bg-gray-100/70`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.names}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.phoneNumber}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex flex-wrap gap-1">
                       {user.roles.map(role => (
@@ -630,7 +758,7 @@ export default function UserPage() {
                       onClick={() => handleDeactivateUser(user)}
                       className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
                     >
-                      Delete
+                      {user.status === 'Active' ? 'Deactivate' : 'Activate'}
                     </button>
                   </td>
                 </tr>
@@ -653,14 +781,13 @@ export default function UserPage() {
         user={selectedUser!}
       />
 
-      {/* Confirmation Dialog */}
       {isConfirmDialogOpen && (
         <>
           <div className="fixed inset-0 bg-gradient-to-br from-gray-600/70 to-gray-900/70 backdrop-blur-sm z-40" />
           <div className="fixed inset-0 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg w-[400px]">
-              <h3 className="text-lg font-bold mb-4">Confirm Deactivation</h3>
-              <p>Are you sure you want to deactivate this user?</p>
+              <h3 className="text-lg font-bold mb-4">Confirm Action</h3>
+              <p>Are you sure you want to {selectedUser?.status === 'Active' ? 'deactivate' : 'activate'} this user?</p>
               <div className="flex justify-end gap-2 mt-6">
                 <button
                   onClick={() => setIsConfirmDialogOpen(false)}
@@ -670,9 +797,9 @@ export default function UserPage() {
                 </button>
                 <button
                   onClick={confirmDeactivation}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                  className={`px-4 py-2 ${selectedUser?.status === 'Active' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-lg`}
                 >
-                  Deactivate
+                  {selectedUser?.status === 'Active' ? 'Deactivate' : 'Activate'}
                 </button>
               </div>
             </div>
